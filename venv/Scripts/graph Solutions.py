@@ -1,0 +1,500 @@
+from collections import defaultdict,deque
+import heapq
+from math import inf
+# CB-FAANG Kill Process
+def kill_process(process,parent,kill):
+    graph=defaultdict(list)
+    for i in range(len(process)):
+        graph[parent[i]].append(process[i])
+    queue=deque()
+    queue.append(kill)
+    sorted_list=[]
+    while queue:
+        vertex=queue.popleft()
+        sorted_list.append(vertex)
+        for child in graph.get(vertex,[]):
+            queue.append(child)
+    print(sorted_list)
+
+# process=[1,3,10,5,4,8,15,20]
+# parent=[3,0,5,3,5,5,8,8]
+# kill=5
+# kill_process(process,parent,kill)
+
+# CB-FAANG JUMP to zeros
+def jump_to_zero(arr,start):
+    graph=defaultdict(list)
+    for i in range(len(arr)):
+        if arr[i]==0:
+            graph[i]=[]
+        else:
+            if i+arr[i]<len(arr):
+                graph[i].append(i+arr[i])
+            if i-arr[i]>=0:
+                graph[i].append(i-arr[i])
+    visited=defaultdict(bool)
+    queue=deque()
+    queue.append(start)
+    while queue:
+        vertex=queue.popleft()
+        visited[vertex]=True
+        if len(graph[vertex])==0:
+            return True
+        else:
+            for child in graph[vertex]:
+                if  not visited[child]:
+                    queue.append(child)
+    return False
+
+# arr=[4,2,3,0,3,1,2]
+# print(jump_to_zero(arr,3))
+
+# CB- FAANG Word ladder problem
+def word_ladder(arr,start,end):
+    words=set(arr)
+    words.add(start)
+    words.add(end)
+    graph=defaultdict(list)
+    for word in words:
+        for char in word:
+            for val in range(ord("a"),ord("z")+1):
+                if chr(val)!=char:
+                    new_word=word.replace(char,chr(val))
+                    if new_word in words:
+                        graph[word].append(new_word)
+    queue=deque()
+    visited=defaultdict(bool)
+    queue.append((start,1))
+    while queue:
+        vertex,dist=queue.popleft()
+        visited[vertex]=True
+        for child in graph[vertex]:
+            if child==end:
+                return dist+1
+            if not visited[child]:
+                queue.append((child,dist+1))
+    return 0
+
+# arr=["hit","hot","dog","lot","log","cog","dot"]
+# start="hit"
+# end="cog"
+# print(word_ladder(arr,start,end))
+
+# CB-FAANG Bipartite Graph
+def is_bipartitie(graph):
+    color=[0]*len(graph)
+
+    for j in range(len(graph)):
+        if color[j]==0:
+            color[j]=1
+            queue = deque()
+            queue.append(j)
+            while queue:
+                i=queue.popleft()
+                for child in graph[i]:
+                    if color[child]==0:
+                        color[child]=-color[i]
+                        queue.append(child)
+                    elif color[child]==color[i]:
+                        return False
+    return True
+
+# print(is_bipartitie([[1,2,3],[0,2],[0,1,3],[0,2]]))
+
+# CB-FAANG Dependent course
+def  dependent_course(numCourses, prerequisites):
+    graph=defaultdict(list)
+    indegree=defaultdict((int))
+    for course in prerequisites:
+        child,parent=course
+        graph[parent].append(child)
+        indegree[child]+=1
+        if parent not in indegree:
+            indegree[parent]=0
+    queue=deque()
+    for i in indegree:
+        if indegree[i]==0:
+            queue.append(i)
+    sorted_list=[]
+    while queue:
+        vertex=queue.popleft()
+        sorted_list.append(vertex)
+        for child in graph[vertex]:
+            indegree[child]-=1
+            if indegree[child]==0:
+                queue.append(child)
+    print(graph,sorted_list)
+    return len(sorted_list)==len(graph)
+
+# Edges=[[1,4],[2,4],[3,1],[3,2]]
+# print(dependent_course(1,[]))
+
+# CB-FAANG Rotten Oranges
+def do_rotten(r,c,queue,grid):
+    # print("hii")
+    count=0
+    if r-1>=0 and grid[r-1][c]==1:
+        grid[r - 1][c] = 2
+        queue.append((r-1,c))
+        count+=1
+    if c-1>=0 and grid[r][c-1]==1:
+        grid[r][c-1] =2
+        queue.append((r,c-1))
+        count+=1
+    if c+1<len(grid[0]) and grid[r][c+1]==1:
+        grid[r][c+1] = 2
+        queue.append((r,c+1))
+        count+=1
+    if r+1<len(grid) and grid[r+1][c]==1:
+        grid[r + 1][c] =2
+        queue.append((r+1,c))
+        count+=1
+    return count
+
+def orangesRotting(grid):
+    row=len(grid)
+    col=len(grid[0])
+    queue=deque()
+    for i in range(row):
+        for j in range(col):
+            if grid[i][j]==2:
+                queue.append((i,j))
+    time=0
+    while queue:
+        size=len(queue)
+        count=0
+        for i in range(size):
+            r,c=queue.popleft()
+            count+=do_rotten(r,c,queue,grid)
+        if count!=0:
+            time+=1
+    for i in range(row):
+        for j in range(col):
+            if grid[i][j]==1:
+                return -1
+    return time
+# grid=[[2,1,1],[0,1,1],[1,0,1]]
+# print(orangesRotting(grid))
+
+# CB-FAANG Walls And Gates
+def change_dist(r,c,queue,grid):
+    # print("HIii")
+    if r-1>=0 and grid[r-1][c]==inf:
+        grid[r-1][c]=grid[r][c]+1
+        queue.append((r-1,c))
+    if c-1>=0 and grid[r][c-1]==inf:
+        grid[r][c-1]=grid[r][c]+1
+        queue.append((r , c-1))
+    if c+1<len((grid[0])) and grid[r][c+1]==inf:
+        grid[r][c+1]=grid[r][c]+1
+        queue.append((r , c+1))
+    if r+1<len(grid) and grid[r+1][c]==inf:
+        grid[r+1][c]=grid[r][c]+1
+        queue.append((r + 1, c))
+def find_gate(grid):
+    row=len(grid)
+    col=len(grid[0])
+    queue=deque()
+    for i in range(row):
+        for j in range(col):
+            if grid[i][j]==0:
+                queue.append((i,j))
+    while queue:
+        size=len(queue)
+        for i in range(size):
+            r,c=queue.popleft()
+            change_dist(r,c,queue,grid)
+# grid = [[inf, -1, 0, inf],
+#         [inf, inf, inf, -1],
+#         [inf, -1, inf, -1],
+#         [0, -1, inf, inf]]
+# find_gate(grid)
+# for i in range(len(grid)):
+#     print(grid[i])
+
+# CB-FAANG Minimum Knight Moves
+def is_valid(row,col,grid):
+    if 0<=row<len(grid) and 0<=col<len(grid[0]) and grid[row][col]<0:
+        return True
+    return False
+
+def move_knight(r,c,queue,grid):
+    if is_valid(r-2,c-1,grid):
+        grid[r-2][c-1]=grid[r][c]+1
+        queue.append((r-2,c-1))
+    if is_valid(r-2,c+1,grid):
+        grid[r-2][c+1]=grid[r][c]+1
+        queue.append((r-2,c+1))
+    if is_valid(r-1,c-2,grid):
+        grid[r-1][c-2]=grid[r][c]+1
+        queue.append((r-1,c-2))
+    if is_valid(r-1,c+2,grid):
+        grid[r-1][c+2]=grid[r][c]+1
+        queue.append((r-1,c+2))
+    if is_valid(r+1,c-2,grid):
+        grid[r+1][c-2]=grid[r][c]+1
+        queue.append((r+1,c-2))
+    if is_valid(r+1,c+2,grid):
+        grid[r+1][c+2]=grid[r][c]+1
+        queue.append((r+1,c+2))
+    if is_valid(r+2,c-1,grid):
+        grid[r+2][c-1]=grid[r][c]+1
+        queue.append((r+2,c-1))
+    if is_valid(r+2,c+1,grid):
+        grid[r+2][c+1]=grid[r][c]+1
+        queue.append((r+2,c+1))
+
+def minimum_knight_moves(row,col,s1,s2,e1,e2):
+    grid=[[-1 for j in range(col)]for i in range(row)]
+    grid[e1][e2]=-2
+    grid[s1][s2]=0
+    queue=deque()
+    queue.append((s1,s2))
+    while queue:
+        r,c=queue.popleft()
+        move_knight(r,c,queue,grid)
+        if grid[e1][e2]!=-2:
+            for i in range(row):
+                print(grid[i])
+            return grid[e1][e2]
+    return -1
+# row=6
+# col=6
+# print(minimum_knight_moves(row,col,1,3,5,0))
+
+#CB-FAANG Friends Group
+def dfs(vertex,graph,visited):
+    visited[vertex]=True
+    if vertex in graph:
+        for child in graph[vertex]:
+            if not visited[child]:
+                dfs(child,graph,visited)
+def friends_group(grid):
+    graph=defaultdict(list)
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j]==1:
+                graph[i].append(j)
+    visited=defaultdict(bool)
+    group=0
+    for vertex in graph:
+        if not visited[vertex]:
+            group+=1
+            dfs(vertex,graph,visited)
+    return group
+
+# grid = [[1, 1, 0, 0, 0, 0],
+#         [1, 1, 0, 0, 0, 1],
+#         [0, 0, 1, 0, 1, 0],
+#         [0, 0, 0, 1, 0, 0],
+#         [0, 0, 1, 0, 1, 0],
+#         [0, 1, 0, 0, 0, 1]]
+# print(friends_group(grid))
+
+# CB FAANG No. Of Islands
+def count_island(grid):
+    graph=defaultdict(list)
+    col=len(grid[0])
+    for i in range(len(grid)):
+        for j in range(col):
+            unique_id=i*col+j
+            if grid[i][j]==1:
+                graph[unique_id]=[]
+                if i-1>=0 and grid[i-1][j]==1:
+                    child_id=(i - 1) * col + j
+                    graph[unique_id].append(child_id)
+                    graph[child_id].append(unique_id)
+                if j-1>=0 and grid[i][j-1]==1:
+                    child_id=(i)*col+j-1
+                    graph[unique_id].append(child_id)
+                    graph[child_id].append(unique_id)
+    visited=defaultdict(bool)
+    island_count=0
+    for vertex in graph:
+        if not visited[vertex]:
+            island_count+=1
+            dfs(vertex,graph,visited)
+    return island_count
+# grid=[[1,1,0,0,0],
+#       [1,1,0,1,0],
+#       [0,0,1,0,0],
+#       [0,0,0,1,1]]
+# print(count_island(grid))
+
+# CB-FAANG MAximum Area Of Island
+def dfs_max_area(vertex,graph,visited):
+    if not visited[vertex]:
+        visited[vertex]=True
+        count=1
+        for child in graph[vertex]:
+            count+=dfs_max_area(child,graph,visited)
+        return count
+    else:
+        return 0
+
+def max_area(grid):
+    graph=defaultdict(list)
+    col=len(grid[0])
+    for i in range(len(grid)):
+        for j in range(col):
+            unique_id=i*col+j
+            if grid[i][j]==1:
+                graph[unique_id]=[]
+                if i-1>=0 and grid[i-1][j]==1:
+                    child_id=(i-1)*col+j
+                    graph[unique_id].append(child_id)
+                    graph[child_id].append(unique_id)
+                if j-1>=0 and grid[i][j-1]==1:
+                    child_id=(i)*col+j-1
+                    graph[unique_id].append(child_id)
+                    graph[child_id].append(unique_id)
+    visited=defaultdict(bool)
+    # print(graph)
+    max_area=0
+    for vertex in graph:
+        if not visited[vertex]:
+            temp=dfs_max_area(vertex,graph,visited)
+            max_area=max(max_area,temp)
+    print(max_area)
+#
+# grid=[[1,1,0,0,0],
+#       [1,1,1,0,1],
+#       [1,0,0,0,1],
+#       [0,0,1,1,1],
+#       [1,1,1,1,1]]
+# max_area(grid)
+
+#
+# CB-FAANG Dependent Course-2
+def dependent_course(arr,total_courses):
+    graph=defaultdict(list)
+    indegree=defaultdict(int)
+    for edge in arr:
+        child,parent=edge
+        graph[parent].append(child)
+        indegree[child]+=1
+        if parent not in indegree:
+            indegree[parent]=0
+    queue=deque()
+    for vertex in indegree:
+        if indegree[vertex]==0:
+            queue.append(vertex)
+    sorted_list=[]
+    while queue:
+        vertex=queue.popleft()
+        sorted_list.append(vertex)
+        for child in graph[vertex]:
+            indegree[child]-=1
+            if indegree[child]==0:
+                queue.append(child)
+    if len(sorted_list)==total_courses:
+        print(sorted_list)
+    else:
+        print(-1)
+# arr=[(1,0),(2,0),(3,1),(3,2)]
+# total_courses=4
+# dependent_course(arr,total_courses)
+
+# Dijkistra's Algo to find SSSP for weighted graph
+def find_sorted_path(edges,src):
+    graph=defaultdict(list)
+    for edge in edges:
+        start,dest,weight=edge
+        graph[start].append((dest,weight))
+        graph[dest].append((start,weight))
+    visited=defaultdict(bool)
+    distance=defaultdict(int)
+    min_heap=[]
+    min_heap.append((0,src))
+    visited[src]=True
+    distance[src]=0
+    while min_heap:
+        weight,vertex=heapq.heappop(min_heap)
+        for child,child_wght in graph[vertex]:
+            if not visited[child]:
+                visited[child]=True
+                distance[child]=distance[vertex]+child_wght
+                heapq.heappush(min_heap,(child_wght,child))
+            elif distance[vertex]+child_wght<distance[child]:
+                distance[child]=distance[vertex]+child_wght
+                heapq.heappush(min_heap,(child_wght,child))
+    for dist in sorted(distance.values()):
+        print(dist,end=" ")
+
+# l = [("A", "B", 7),
+#      ("A", "D", 5),
+#      ("B", "C", 8),
+#      ("B", "D", 9),
+#      ("B", "E", 50),
+#      ("C", "E", 5),
+#      ("D", "E", 15),
+#      ("D", "F", 100),
+#      ("E", "F", 8),
+#      ("E", "G", 9),
+#      ("F", "G", 11)]
+# find_sorted_path(l,"A")
+
+# CB-Religious People
+# All the people living in our imaginary world Bitworld are very religious.
+# There are N cities in Bitworld numbered from 1 to N.
+# Due to a storm, every road in Bitworld was destroyed and now no temples are left.
+# There are 2 types of operations :
+#  1. You can construct a temple by giving away A dollars in ith city.
+#  2. You can repair an already existing road by giving away B dollars.
+# Your goal is to make temples such that people of every city have access to some temple.
+
+def dfs_religious_people(vertex,graph,visited):
+    count=1
+    visited[vertex]=True
+    for child in graph[vertex]:
+            if not visited[child]:
+                count+=dfs_religious_people(child,graph,visited)
+    return count
+
+def religious_prople(roads,cities_count,road_count,temple_cost,road_cost):
+    graph=defaultdict(list)
+    for road in roads:
+        src,dest=road
+        graph[src].append(dest)
+        graph[dest].append(src)
+    if temple_cost<road_cost:
+        print(len(graph)*temple_cost)
+    else:
+        visited=defaultdict(list)
+        cost=0
+        for vertex in graph:
+            if not visited[vertex]:
+                cost+=temple_cost
+                node_count=dfs_religious_people(vertex,graph,visited)
+                print(node_count)
+                cost+=((node_count-1)*road_cost)
+        print(cost)
+# roads = [[1, 3],
+#          [3, 4],
+#          [2, 4],
+#          [1, 2],
+#          [2, 3],
+#          [5, 6]]
+# cities_count=6
+# road_count=6
+# temple_cost=5
+# road_cost=2
+# religious_prople(roads,cities_count,road_count,temple_cost,road_cost)
+
+# Given a dictionary of words, find minimum number of trials to reach from source word to destination word.
+# A valid trial on word 'w' is defined as either insert, delete or substitute operation of a single character
+# in word 'w' which results in a word 'w1' which is also present in the given dictionary.
+# For example, for dictionary {"BCCI","AICC","ICC","CCI","MCC","MCA", "ACC"},
+# minimum number of trials to reach from word "AICC" to "ICC" is 1.
+# Only 1 opeartion of deleting character 'A' is required to reach from word "AICC" to word "ICC".
+# Minimum number of trials to reach from "AICC" to "MCC" is 2(AICC->ICC->MCC) and
+# minimum number of trials to reach from "AICC" to "MCA" is 3(AICC->ICC->MCC->MCA).
+
+# Edit Distance
+
+
+
+
+
+
+
