@@ -490,7 +490,137 @@ def religious_prople(roads,cities_count,road_count,temple_cost,road_cost):
 # Minimum number of trials to reach from "AICC" to "MCC" is 2(AICC->ICC->MCC) and
 # minimum number of trials to reach from "AICC" to "MCA" is 3(AICC->ICC->MCC->MCA).
 
-# Edit Distance
+# It will count the no. of editing steps for matching the string
+def edit_strings(str1,str2,dp):
+    if len(str1)==0 or len(str2)==0:
+        dp[len(str1)][len(str2)]=max(len(str1),len(str2))
+        return dp[len(str1)][len(str2)]
+    if dp[len(str1)][len(str2)]!=-1:
+        return dp[len(str1)][len(str2)]
+    if str1[0]==str2[0]:
+        dp[len(str1)][len(str2)]=edit_strings(str1[1:],str2[1:],dp)
+        return dp[len(str1)][len(str2)]
+    insert=edit_strings(str1[1:],str2,dp)+1
+    delete=edit_strings(str1,str2[1:],dp)+1
+    replace=edit_strings(str1[1:],str2[1:],dp)+1
+    dp[len(str1)][len(str2)]=min(insert,delete,replace)
+    return dp[len(str1)][len(str2)]
+
+# Create graph of given dictonary
+def create_graph(words):
+    graph=defaultdict(list)
+    for i in range(len(words)):
+        word1=words[i]
+        for j in range(i+1,len(words)):
+            word2=words[j]
+            if abs(len(word1)-len(word2))<=1:
+                dp = [[-1 for j in range(len(word2) + 1)] for i in range(len(word1) + 1)]
+                if edit_strings(word1,word2, dp)==1:
+                    graph[word1].append(word2)
+                    graph[word2].append(word1)
+    return graph
+
+# find min. step to reach from one to word to the other in graph
+def bfs(graph,word1,word2):
+    queue=deque()
+    queue.append((word1,0))
+    visited=set()
+
+    while queue:
+        word,dist=queue.popleft()
+        visited.add(word)
+        for child in graph[word]:
+            if child==word2:
+                return dist+1
+            if child not in visited:
+                queue.append((child,dist+1))
+    return -1
+
+
+# words=["BCCI","AICC","ICC","CCI","MCC","MCA", "ACC"]
+# word1="AICC"
+# word2="BCCI"
+# graph=create_graph(words)
+# print(bfs(graph,word1,word2))
+
+
+# Find a Mother Vertex in a Graph
+# A mother vertex in a graph G = (V,E) is a vertex v such that
+# all other vertices in G can be reached by a path from v.
+def dfs_mother_vertex(vertex,visited,graph):
+    visited.add(vertex)
+    for child in graph[vertex]:
+        if child not in visited:
+            dfs_mother_vertex(child, visited, graph)
+
+def mother_vertex(arr):
+    graph=defaultdict(list)
+    for edge in arr:
+        n1,n2=edge[0],edge[1]
+        graph[n1].append(n2)
+        if n2 not in graph:
+            graph[n2]=[]
+    visited=set()
+    mother_node=-1
+    for vertex in graph:
+        if vertex not in visited:
+            dfs_mother_vertex(vertex,visited,graph)
+            mother_node=vertex
+    visited=set()
+    if mother_node!=-1:
+        dfs_mother_vertex(mother_node,visited,graph)
+    if any(i not in visited for i in graph):
+        return -1
+    else:
+        return mother_node
+
+arr = [[0, 1],
+       [0, 2],
+       [1, 3],
+       [4, 1],
+       [6, 4],
+       [5, 6],
+       [5, 2],
+       [6, 0]]
+# print(mother_vertex(arr))
+
+# Count the total number of ways or paths that exist between two vertices in a directed graph.
+# These paths don’t contain a cycle, the simple enough reason is that a cycle contains
+# an infinite number of paths and hence they create a problem.
+def dfs_total_path(src,dst,dp,graph):
+    if src==dst:
+        return 1
+    if dp[src]!=-1:
+        return dp[src]
+    ans=0
+    for child in graph[src]:
+        dp[child]=dfs_total_path(child,dst,dp,graph)
+        ans+=dp[child]
+    if ans!=0:
+        dp[src]=ans
+    return ans
+
+
+def count_total_path(arr,src,dst):
+    graph=defaultdict(list)
+    for edge in arr:
+        graph[edge[0]].append(edge[1])
+    dp=defaultdict(lambda:-1)
+    return dfs_total_path(src,dst,dp,graph)
+
+arr = [[1,4],[1,2],[2,3],[5,4],[4,3],[1,3],[2,5]]
+s = 1
+d = 4
+print(count_total_path(arr,s,d))
+
+
+
+
+
+
+
+
+
 
 
 
