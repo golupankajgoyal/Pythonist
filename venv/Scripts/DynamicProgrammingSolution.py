@@ -1,5 +1,6 @@
 import sys
 from sys import maxsize
+from math import inf
 def memFindSumOfSquares(n,arr):
     if n<=1:
         arr[n]=n
@@ -364,3 +365,301 @@ def findSumPossibleDpWithXor(num,values):
     for i in range(2):
         print(dp[i])
     print(dp[flag^1][num])
+
+# Two water Jug problem
+# You are at the side of a river. You are given a m litre jug and a n litre jug where 0 < m < n.
+# Both the jugs are initially empty. The jugs don’t have markings to allow measuring smaller quantities.
+# You have to use the jugs to measure d litres of water where d < n.
+# Determine the minimum no of operations to be performed to obtain d litres of water in one of jug.
+# The operations you can perform are:
+# 1. Empty a Jug
+# 2. Fill a Jug
+# 3. Pour water from one jug to the other until one of the jugs is either empty or full.
+# User function Template for python3
+# Without dp
+def gcd(n, m):
+    if m == 0:
+        return n
+    return gcd(m, n % m)
+
+def count_steps(from_jug, to_jug, d):
+    from_jug_level = from_jug
+    to_jug_level = 0
+    step = 1
+    while from_jug_level != d and to_jug_level != d:
+        temp = min(from_jug_level, to_jug - to_jug_level)
+        from_jug_level -= temp
+        to_jug_level += temp
+        step += 1
+        # print(from_jug_level,to_jug_level,step)
+        if from_jug_level == d or to_jug_level == d:
+            # print(step)
+            return step
+
+        if to_jug_level == to_jug:
+            to_jug_level = 0
+
+            step += 1
+            # print(from_jug_level,to_jug_level,step)
+
+        if from_jug_level == 0:
+            from_jug_level = from_jug
+
+            step += 1
+            # print(from_jug_level,to_jug_level,step)
+    # print(step)
+    return step
+
+def minSteps(self, m, n, d):
+    # Code here
+    if gcd(n, m) // d != 0:
+        return -1
+    count = min(count_steps(m, n, d), count_steps(n, m, d))
+    return count
+
+# Using Recursion
+def find_min_steps(i,j,m,n,d):
+    if i==d or j==d:
+        return 0
+    temp=min(i,n-j)
+    step=0
+    i-=temp
+    j+=temp
+    step+=1
+    print(i, j)
+    if i==d or j==d:
+        return 2
+    if i==0:
+        i=m
+        step += 1
+        print(i, j)
+    if j==n:
+        j=0
+        step += 1
+        print(i, j)
+    return step + find_min_steps(i,j,m,n,d)
+# m = 3
+# n = 5
+# d = 4
+# print(3,0)
+# print(find_min_steps(3,0,m,n,d))
+
+# Determine the minimum time needed to search through a set of folders given a number of workers.
+# The workers must search a contiguous set of folders, and each folder may take a
+# varying amount of time to process.
+def  find_min_load(workers,folders,dp,count):
+    count[0] += 1
+    if len(folders)==0:
+        return 0
+    if workers==1:
+        dp[1][len(folders)]=sum(folders)
+        return dp[1][len(folders)]
+    if len(folders)<workers:
+        dp[workers][len(folders)]=-1
+        return -1
+    if dp[workers][len(folders)]!=-1:
+        return dp[workers][len(folders)]
+    min_load=inf
+    for i in range(len(folders)):
+        curr_load=sum(folders[:i+1])
+        if dp[workers-1][len(folders[i+1:])]==-1:
+            find_min_load(workers-1,folders[i+1:],dp,count)
+        temp=dp[workers-1][len(folders[i+1:])]
+        min_load=min(min_load,max(curr_load,temp))
+    dp[workers][len(folders)]=min_load
+    return min_load
+
+# arr=[ 568, 712, 412, 231, 241, 393, 865, 287, 128, 457, 238, 98, 980, 23, 782]
+# workers=4
+# count=[0]
+# dp=[[-1 for i in range(len(arr)+1)]for j in range(workers+1)]
+# print(find_min_load(workers,arr,dp,count))
+# for i in range(len(dp)):
+#     print(dp[i])
+# print(count[0])
+# Returns: 1785
+# The filing cabinets should be partitioned as follows:
+# 	568 712 412 | 231 241 393 865 | 287 128 457 238 98 | 980 23 782
+
+
+# https://www.hackerrank.com/challenges/equal/problem
+def count_step(arr, num):
+    result = -1
+    for i in arr:
+        x=i-num
+        temp = x // 5 + (x % 5) // 2 + (x % 5) % 2
+        result +=temp
+    return result
+
+
+def equal(arr):
+    min_count = min(arr)
+    ans = inf
+    print(min_count)
+    for i in range(max(0, min_count - 4), min_count + 1):
+        temp=count_step(arr, i)
+        ans = min(ans,temp )
+        print(i,temp)
+    return ans+1
+
+# arr=[520,862,10,956,498,956,991,542,523,664,378,194,76,90,753,868,837,830,932,814,616,78,103,882,452,397,899,488,149,108,723,22,323,733,330,821,41,322,715,917,986,93,111,63,535,864,931,372,47,215,539,15,294,642,897,98,391,796,939,540,257,662,562,580,747,893,401,789,215,468,58,553,561,169,616,448,385,900,173,432,115,712]
+# print(equal(arr))
+
+def longest_bitonic_subsequence(arr,i,dp):
+    if i ==0:
+        dp[0]=[1,1]
+        return
+
+    if dp[i-1]==-1:
+        longest_bitonic_subsequence(arr, i-1, dp)
+    max_seq=0
+    order=0
+    for j in range(i-1,-1,-1):
+        if arr[i]>arr[j]:
+            if dp[j][1]==1 and max_seq<dp[j][0]:
+                max_seq=dp[j][0]
+                order=1
+        elif  arr[i]<arr[j]:
+            if max_seq<dp[j][0]:
+                max_seq =dp[j][0]
+                order=-1
+        else:
+            max_seq = dp[j][0]
+            order = dp[j][1]
+            break
+    if order==0:
+        dp[i]=[1,1]
+    else:
+        dp[i]=[max_seq+1,order]
+
+def longest_bitonic_subsequence_init(arr):
+    dp = [-1 for i in range(len(arr))]
+    longest_bitonic_subsequence(arr, len(arr) - 1, dp)
+    result = 0
+    print(dp)
+    for temp in dp:
+        result = max(result, temp[0])
+    return result
+
+# arr=[20 ,7, 9 ,6, 9 ,21, 12, 3 ,12, 16, 1, 27]
+# print(longest_bitonic_subsequence_init(arr))
+
+
+# Find permutation of Climbing Stair
+def find_stair_case(num):
+    if num<=1:
+        return 1
+    count=find_stair_case(num-1)+find_stair_case(num-2)
+    return count
+
+# num=5
+# print(find_stair_case(num))
+
+def find_stair_case_mem(num,dp):
+    if num<=1:
+        dp[num]=1
+        return 1
+    if dp[num]!=-1:
+        return dp[num]
+    count=0
+    if dp[num-1]==-1:
+        dp[num-1]=find_stair_case_mem(num-1,dp)
+    count+=dp[num-1]
+    if dp[num-2]==-1:
+        dp[num-2]=find_stair_case_mem(num-2,dp)
+    count+=dp[num-2]
+    dp[num]=count
+    return count
+
+# num=6
+# dp=[-1 for i in range(num+1)]
+# print(find_stair_case_mem(num,dp))
+# print(dp)
+
+def find_stair_case_dp(num):
+    dp=[1,1]
+    flag=1
+    for i in range(2,num+1):
+        temp=sum(dp)
+        dp[flag]=temp
+        flag=1-flag
+    return dp[1-flag]
+num=10
+# print(find_stair_case_dp(num))
+
+def smart_robbery(arr,index,dp):
+    if index>=len(arr)-2:
+        dp[index]=max(arr[index],arr[-1])
+        return dp[index]
+
+    if dp[index]!=-1:
+        return dp[index]
+    amount1 = 0
+    if index+2<len(arr):
+        if dp[index+2]==-1:
+            smart_robbery(arr, index + 2,dp)
+        amount1=arr[index]+dp[index+2]
+    if dp[index+1]==-1:
+        smart_robbery(arr, index + 1,dp)
+    amount2=dp[index+1]
+    dp[index]=max(amount1,amount2)
+    return dp[index]
+# arr=[49,130,124,85,455,257,341,467,377,432,309,445,440,127,324,38,39,119,83,430,42,334,116,140,159,205,431,478,307,174,387,22,246,425,73,271,330,278,74,98,13,487,291,162,137,356,268,156,75,32,53,351,151,442,225,467,431,108,192,8,338,458,288,254,384,446,410,210,259,222,89,423,447,7,31,414,169,401,92,263,156,411,360,125,38,49,484,96,42,103,351,292,337,375]
+#
+# dp=[-1 for i in range(len(arr))]
+# print(smart_robbery(arr,0,dp))
+# print(dp)
+
+def smart_robbery_dp(arr):
+    n=len(arr)
+    if n==1:
+        return arr[0]
+    temp=max(arr[0],arr[1])
+    dp=[arr[0],temp]
+    flag=0
+    for i in range(2,n):
+        temp=max(dp[flag]+arr[i],dp[1-flag])
+        dp[flag]=temp
+        flag=1-flag
+        print(dp)
+    return dp[1-flag]
+# arr=[49,130,124,85,455,257,341,467,377,432,309,445,440,127,324,38,39,119,83,430,42,334,116,140,159,205,431,478,307,174,387,22,246,425,73,271,330,278,74,98,13,487,291,162,137,356,268,156,75,32,53,351,151,442,225,467,431,108,192,8,338,458,288,254,384,446,410,210,259,222,89,423,447,7,31,414,169,401,92,263,156,411,360,125,38,49,484,96,42,103,351,292,337,375]
+# print(len(arr))
+# print(smart_robbery_dp(arr))
+
+def find_total_ways(row,col):
+    if row==1 or col==1:
+        return 1
+
+    return find_total_ways(row-1,col)+find_total_ways(row,col-1)
+# row=2
+# col=3
+# print(find_total_ways(row,col))
+
+def find_total_ways_dp(row,col,dp):
+    if row==1 or col==1:
+        dp[row][col]=1
+        return 1
+    if dp[row][col]!=-1:
+        return dp[row][col]
+    count=0
+    if dp[row-1][col]==-1:
+        dp[row-1][col]=find_total_ways_dp(row - 1, col,dp)
+    count+=dp[row-1][col]
+    if dp[row][col-1]==-1:
+        dp[row][col-1]=find_total_ways_dp(row,col-1,dp)
+    count+=dp[row][col-1]
+    dp[row][col]=count
+    return count
+row=3
+col=3
+dp=[[-1 for i in range(col+1)]for j in range(row+1)]
+print(find_total_ways_dp(row,col,dp))
+for i in range(len(dp)):
+    print(dp[i])
+
+
+
+
+
+

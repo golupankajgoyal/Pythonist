@@ -574,14 +574,14 @@ def mother_vertex(arr):
     else:
         return mother_node
 
-arr = [[0, 1],
-       [0, 2],
-       [1, 3],
-       [4, 1],
-       [6, 4],
-       [5, 6],
-       [5, 2],
-       [6, 0]]
+# arr = [[0, 1],
+#        [0, 2],
+#        [1, 3],
+#        [4, 1],
+#        [6, 4],
+#        [5, 6],
+#        [5, 2],
+#        [6, 0]]
 # print(mother_vertex(arr))
 
 # Count the total number of ways or paths that exist between two vertices in a directed graph.
@@ -608,21 +608,98 @@ def count_total_path(arr,src,dst):
     dp=defaultdict(lambda:-1)
     return dfs_total_path(src,dst,dp,graph)
 
-arr = [[1,4],[1,2],[2,3],[5,4],[4,3],[1,3],[2,5]]
-s = 1
-d = 4
-print(count_total_path(arr,s,d))
+# arr = [[1,4],[1,2],[2,3],[5,4],[4,3],[1,3],[2,5]]
+# s = 1
+# d = 4
+# print(count_total_path(arr,s,d))
 
 
+# Given a sorted dictionary of an alien language having N words and k
+# starting alphabets of standard dictionary. Find the order of characters in the alien language.
+#User function Template for python3
+def findOrder(arr ):
+    graph=defaultdict(list)
+    indegree=defaultdict(int)
+    for i in range(len(arr)-1):
+        word1,word2=arr[i],arr[i+1]
+        for j in range(min(len(word1),len(word2))):
+            if word1[j]!=word2[j]:
+                graph[word1[j]].append(word2[j])
+                break
+    for vertex in graph:
+        for child in graph[vertex]:
+            indegree[child]+=1
+    queue=deque()
+    for vertex in graph:
+        if indegree[vertex]==0:
+            queue.append(vertex)
+    word=""
+    while queue:
+        char=queue.popleft()
+        word+=char
+        for child in graph[char]:
+            indegree[child]-=1
+            if indegree[child]==0:
+                queue.append(child)
+    # print(word)
+    return word
+# arr=["baa","abcd","abca","cab","cad"]
+# print(findOrder(arr))
 
+# Jumping Numbers
+# Given a positive number X. Find the largest Jumping Number smaller than or equal to X.
+# Jumping Number: A number is called Jumping Number if all adjacent digits in it differ by only 1.
+# All single digit numbers are considered as Jumping Numbers.
+# For example 7, 8987 and 4343456 are Jumping numbers but 796 and 89098 are not.
+def jumpingNums( X):
+    # code here
+    queue = deque()
+    for i in range(0, 10):
+        queue.append(i)
 
+    max_num = -1
+    while queue:
+        num = queue.popleft()
+        if num <= X:
+            max_num = max(max_num, num)
+            if num % 10 == 0:
+                queue.append(num * 10 + 1)
+            elif num % 10 == 9:
+                queue.append(num * 10 + 8)
+            else:
+                queue.append(num * 10 + num % 10 + 1)
+                queue.append(num * 10 + num % 10 - 1)
+    return max_num
 
+# Test case
+# X=50
+# print(jumpingNums(X))
 
+# Find Eventual Safe States
+# https://leetcode.com/problems/find-eventual-safe-states/
+def dfs(i, color, graph):
+    color[i] = 1
+    for child in graph[i]:
+        if color[child] == 2:
+            return True
+        elif color[child] == 1 or dfs(child, color, graph) == False:
+            return False
+    color[i] = 2
+    return True
 
+def eventualSafeNodes(graph):
+    ans = []
+    color = defaultdict(int)
+    for i in range(len(graph)):
+        if color[i] == 0 and dfs(i, color, graph):
+            ans.append(i)
+        elif color[i] == 2:
+            ans.append(i)
+    return sorted(ans)
 
-
-
-
+# Input:
+graph = [[1,2],[2,3],[5],[0],[5],[],[]]
+print(eventualSafeNodes(graph))
 
 
 
