@@ -1,6 +1,7 @@
 import sys
 from sys import maxsize
 from math import inf
+from collections import deque
 def memFindSumOfSquares(n,arr):
     if n<=1:
         arr[n]=n
@@ -651,12 +652,164 @@ def find_total_ways_dp(row,col,dp):
     count+=dp[row][col-1]
     dp[row][col]=count
     return count
-row=3
-col=3
-dp=[[-1 for i in range(col+1)]for j in range(row+1)]
-print(find_total_ways_dp(row,col,dp))
-for i in range(len(dp)):
-    print(dp[i])
+# row=3
+# col=3
+# dp=[[-1 for i in range(col+1)]for j in range(row+1)]
+# print(find_total_ways_dp(row,col,dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+# Print the length of longest balance Parenthesis
+# Think about the following test cases
+# 1. s="()(() ans=2
+# 2. s="(()())" ans=6
+def maxLength( s):
+    # code here
+    n = len(s)
+    stack = deque()
+    stack.append(-1)
+    ans = 0
+    for i in range(n):
+        if s[i] == "(":
+            stack.append(i)
+        else:
+            stack.pop()
+            if stack:
+                temp = i - stack[-1]
+                ans = max(temp, ans)
+            else:
+                stack.append(i)
+    return ans
+
+# S="(()())"
+# print(maxLength(S))
+
+# Maximum Rectangle area Given an m x n binary matrix filled with 0's and 1's,
+# find the largest square containing only 1's and return its area.
+
+# Recursive Solution
+def max_square_area(m,n,grid,ans):
+    if m<0 or n<0:
+        return 0
+    temp=min(max_square_area(m,n-1,grid,ans),max_square_area(m-1,n,grid,ans),max_square_area(m-1,n-1,grid,ans))
+    if grid[m][n]==1:
+        temp+=1
+    else:
+        temp=0
+    # print(temp,m,n)
+    ans[0]=max(ans[0],temp)
+    return temp
+
+# matrix = [[0, 1, 1, 0, 1],
+#           [1, 1, 0, 1, 0],
+#           [1, 1, 1, 1, 0],
+#           [1, 1, 1, 1, 0],
+#           [1, 1, 1, 1, 1],
+#           [0, 0, 0, 0, 0]]
+# ans=[0]
+# max_square_area(len(matrix)-1,len(matrix[0])-1,matrix,ans)
+# print(ans[0])
+
+def max_square_area_mem(m,n,grid,ans,dp):
+    if m<0 or n<0:
+        return 0
+    if dp[m][n]!=-1:
+        return dp[m][n]
+    temp=min(max_square_area_mem(m,n-1,grid,ans,dp),max_square_area_mem(m-1,n,grid,ans,dp),max_square_area_mem(m-1,n-1,grid,ans,dp))
+    if grid[m][n]==1:
+        temp+=1
+        dp[m][n] = temp
+    else:
+        dp[m][n]=0
+    # print(temp,m,n)
+    ans[0]=max(ans[0],dp[m][n])
+
+    return dp[m][n]
+
+# matrix = [[0, 1, 1, 0, 1],
+#           [0, 1, 1, 1, 0],
+#           [1, 1, 1, 1, 0],
+#           [1, 1, 1, 1, 0],
+#           [1, 1, 1, 1, 1],
+#           [0, 0, 0, 0, 0]]
+# ans=[0]
+# dp=[[-1 for j in range(len(matrix[0]))]for i in range(len(matrix))]
+# max_square_area_mem(len(matrix)-1,len(matrix[0])-1,matrix,ans,dp)
+# for i in range(len(dp)):
+#     print(dp[i])
+# print(ans[0])
+
+# Given an array prices[] which denotes the prices of the stocks on different days,
+# the task is to find the maximum profit possible after buying and selling the stocks on different days
+# using transaction
+def buy_and_sell_stock(prices,n):
+    max_profit = 0
+    i = 0
+    valley = prices[0]
+    peak = prices[0]
+    ans = []
+    while i < n:
+        while i < n - 1 and prices[i] >= prices[i + 1]:
+            i += 1
+        valley = i
+        while i < n - 1 and prices[i] <= prices[i + 1]:
+            i += 1
+        peak = i
+        # max_profit+=(prices[peak]-prices[valley])
+        if peak != valley:
+            # print((valley,peak),end="")
+            ans.append(list((valley, peak)))
+        i += 1
+    return ans
+
+# prices=[6764,3645,5181,5893,4542,6753,3996,5483,585,9895,2657,777,1343,4605,261,2225,959,9884,563,4131,6687,7528,6224,436,3333,110,2037,7007,4710,2310,7596,7827,2307,9129,72,3202,2234,4069,5037,2819,3964,7694,9948,5307,8652,6561,7532,9611,6445,8095,94,9484,1975,6319,9920,5308,6429,1958,8668,7491,620,6264,5318,2927,1745,5391,6129,3979,5812,1167,3150,9776,8861,3098,5083,3865,9659,8968,3476,6104,3415,9923,1940,1743,6242,1861,3403,9023,3819]
+# print(buy_and_sell_stock(prices,len(prices)))
+
+# Maximum possible using one transaction can be calculated using the following O(n) algorithm
+def find_max_stock_profit(arr,n):
+    max_profit=0
+    curr_min=arr[0]
+    left_to_right=[0]*n
+    for i in range(0,n):
+        if arr[i]<curr_min:
+            curr_min=arr[i]
+        else:
+            max_profit=max(max_profit,arr[i]-curr_min)
+        left_to_right[i]=max_profit
+    return left_to_right
+
+# prices=[2, 30, 15, 10, 8, 25, 80]
+# print(find_max_stock_profit(prices,len(prices)))
+
+def find_max_stock_profit_reverse(arr,n):
+    max_profit=0
+    curr_max=arr[-1]
+    right_to_left=[0]*n
+    for i in range(n-1,-1,-1):
+        if arr[i]>curr_max:
+            curr_max=arr[i]
+        else:
+            max_profit=max(max_profit,curr_max-arr[i])
+        right_to_left[i]=max_profit
+    return right_to_left
+
+# prices=[2, 30, 15, 10, 8, 25, 80]
+# print(find_max_stock_profit_reverse(prices,len(prices)))
+
+# In daily share trading, a buyer buys shares in the morning and sells them on the same day.
+# If the trader is allowed to make at most 2 transactions in a day, whereas the second transaction
+# can only start after the first one is complete (Sell->buy->sell->buy). Given stock prices throughout the day,
+# find out the maximum profit that a share trader could have made.
+def find_max_profit_from_stock(prices,n):
+    left_to_right=find_max_stock_profit(prices,n)
+    right_to_left=find_max_stock_profit_reverse(prices,n)
+    max_profit=0
+    for i in range(n):
+        max_profit=max(max_profit,left_to_right[i]+right_to_left[i])
+    return max_profit
+prices=[2, 30, 15, 10, 8, 25, 80]
+print(find_max_profit_from_stock(prices,len((prices))))
+
 
 
 
