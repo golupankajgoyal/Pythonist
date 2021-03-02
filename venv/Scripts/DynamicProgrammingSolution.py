@@ -2,6 +2,7 @@ import sys
 from sys import maxsize
 from math import inf
 from collections import deque
+from operator import itemgetter
 def memFindSumOfSquares(n,arr):
     if n<=1:
         arr[n]=n
@@ -807,8 +808,594 @@ def find_max_profit_from_stock(prices,n):
     for i in range(n):
         max_profit=max(max_profit,left_to_right[i]+right_to_left[i])
     return max_profit
-prices=[2, 30, 15, 10, 8, 25, 80]
-print(find_max_profit_from_stock(prices,len((prices))))
+# prices=[2, 30, 15, 10, 8, 25, 80]
+# print(find_max_profit_from_stock(prices,len((prices))))
+
+
+# Given an input string (s) and a pattern (p), implement regular expression matching with support for '.' and '*' where:
+#
+# '.' Matches any single character.
+# '*' Matches zero or more of the preceding element.
+# The matching should cover the entire input string (not partial).
+def match_string(s,p,i,j):
+    if  j ==len(p):
+        print(i,j)
+        return i==len(s)
+
+    first_match=i<len(s) and p[j] in {s[i],"."}
+    # print(first_match,i,j)
+    if j+1<len(p) and p[j+1]=="*":
+        result1=match_string(s,p,i,j+2)
+        result2=first_match and match_string(s,p,i+1,j)
+        return result1 or result2
+    else:
+        return first_match and match_string(s,p,i+1,j+1)
+
+# s="ab"
+# p = ".*"
+# print(match_string(s,p,0,0))
+
+def match_string_mem(s,p,i,j,dp):
+    if  j ==len(p):
+        result=i==len(s)
+        dp[i][j]=result
+        return result
+    if dp[i][j]!=-1:
+        return dp[i][j]
+    first_match=i<len(s) and p[j] in {s[i],"."}
+    # print(first_match,i,j)
+    if j+1<len(p) and p[j+1]=="*":
+        result1=match_string_mem(s,p,i,j+2,dp)
+        result2=first_match and match_string_mem(s,p,i+1,j,dp)
+        dp[i][j]=result1 or result2
+    else:
+        dp[i][j]=first_match and match_string_mem(s,p,i+1,j+1,dp)
+    return dp[i][j]
+
+# s = "aab"
+# p = "c*a*b"
+# dp=[[-1 for i in range(len(p)+1)]for j in range(len(s)+1)]
+# print(match_string_mem(s,p,0,0,dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+# Given a string, the task is to count all palindrome sub string in a given string.
+# Length of palindrome sub string is greater than or equal to 2.
+
+# Recursive Approach
+def is_palindrom(i,j,string):
+    if j<=i+1:
+        return string[i]==string[j]
+    if string[i]!=string[j]:
+        return False
+    return is_palindrom(i+1,j-1,string)
+
+def count_palindromic_substring(i,j,string):
+    if i>=j:
+        return 0
+    if j==i+1:
+        if string[i]==string[j]:
+            return 1
+        else:
+            return 0
+    count=count_palindromic_substring(i+1,j,string)+count_palindromic_substring(i,j-1,string)-count_palindromic_substring(i+1,j-1,string)
+    if is_palindrom(i,j,string):
+        count+=1
+    # print(i,j,count)
+    return count
+
+# string="abbaeae"
+# i=0
+# j=len(string)-1
+# print(count_palindromic_substring(i,j,string))
+
+# Top to bottom (Memoization) Approach
+def is_palindrom_mem(i, j, string, dp):
+    if j<= i + 1:
+        dp[i][j] = string[i] == string[j]
+        return dp[i][j]
+    if dp[i][j] != -1:
+        return dp[i][j]
+    if string[i] == string[j]:
+        dp[i][j] = is_palindrom_mem(i + 1, j - 1, string, dp)
+    else:
+        dp[i][j] = False
+    return dp[i][j]
+
+def count_palindromic_substring_mem(string,n):
+    dp=[[-1 for i in range(n+1)]for j in range(n+1)]
+    count=0
+    for i in range(n):
+        for j in range(i+1,n):
+            if is_palindrom_mem(i,j,string,dp):
+                count+=1
+    for i in range(len(dp)):
+        print(dp[i])
+    return count
+
+# string="abbaeae"
+# print(count_palindromic_substring_mem(string,len(string)))
+
+
+# Given a value N, find the number of ways to make change for N cents,
+# if we have infinite supply of each of S = { S1, S2, .. , SM } valued coins.
+def coin_change(amount,i,coins,dp):
+    if amount==0:
+        return 1
+    if amount<0 or i <0:
+        return 0
+    if dp[i][amount]!=-1:
+        return dp[i][amount]
+    count = (coin_change(amount, i - 1, coins, dp)+coin_change(amount-coins[i],i,coins,dp))
+    dp[i][amount]=count
+    return count
+
+# coins=[2, 5, 3, 6]
+# amount=10
+# dp=[[-1 for j in range(amount+1)]for i in range(len(coins)+1)]
+# print(coin_change(amount,len(coins)-1,coins,dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+def coin_change_dp(coins,amount):
+    dp = [0 for j in range(amount + 1)]
+    dp[0]=1
+    for i in range(len(coins)):
+        for j in range(1,amount+1):
+            if j-coins[i]>=0:
+                dp[j]+=dp[j-coins[i]]
+        print(dp)
+    return dp[amount]
+# coins=[2, 5, 3, 6]
+# amount=10
+# print(coin_change_dp(coins,amount))
+
+def max_cost_path(grid,i,j,dp):
+    # print(i, j)
+    # if i==len(grid)-1 and j<=len(grid[0])-1:
+    #     dp[i][j]=grid[i][j]
+    #     return dp[i][j]
+    if i>=len(grid) or j>=len(grid[0]) or j<0:
+        return 0
+    if dp[i][j]!=-1:
+        return dp[i][j]
+
+    cost1=max_cost_path(grid,i+1,j-1,dp)
+    cost2=max_cost_path(grid,i+1,j,dp)
+    cost3=max_cost_path(grid,i+1,j+1,dp)
+    dp[i][j]=grid[i][j]+max(cost1,cost2,cost3)
+    return dp[i][j]
+
+def max_cost_path_init(cost):
+    dp = [[-1 for j in range(len(cost[0]))] for i in range(len(cost))]
+    ans = 0
+    for i in range(len(cost[0])):
+        ans = max(ans, max_cost_path(cost, 0, i, dp))
+    for i in range(len(dp)):
+        print(dp[i])
+    return ans
+
+cost = [[1, 0, 7],
+        [2, 0, 6],
+        [3, 4, 5],
+        [0, 3, 0],
+        [9, 0, 20]]
+# print(max_cost_path_init(cost))
+
+# Gold Mine Problem
+# Given a gold mine called M of (n x m) dimensions. Each field in this mine contains a positive integer which
+# is the amount of gold in tons. Initially the miner can start from any row in the first column.
+# From a given cell, the miner can move
+#
+# to the cell diagonally up towards the right
+# to the right
+# to the cell diagonally down towards the right
+# Find out maximum amount of gold which he can collect.
+def mine_for_gold(grid,i,j,dp):
+    if i>=len(grid) or i<0 or j>=len(grid[0]) or j<0:
+        return 0
+    if dp[i][j]!=-1:
+        return dp[i][j]
+    cost1=mine_for_gold(grid,i-1,j+1,dp)
+    cost2=mine_for_gold(grid,i,j+1,dp)
+    cost3=mine_for_gold(grid,i+1,j+1,dp)
+    dp[i][j]=grid[i][j]+max(cost1,cost2,cost3)
+    # print(i,j)
+    return dp[i][j]
+
+# grid = [[10, 33, 13, 15],
+#         [22, 21, 4, 1],
+#         [5, 0, 2, 3],
+#         [0, 6, 14, 2]]
+# ans=0
+# dp=[[-1 for j in range(len(grid[0]))]for i in range(len(grid))]
+# for i in range(len(grid)):
+#     ans=max(ans,mine_for_gold(grid,i,0,dp))
+# print(ans)
+# for i in range(len(dp)):
+#     print(dp[i])
+
+# A number can always be represented as a sum of squares of other numbers.
+# Note that 1 is a square and we can always break a number as (1*1 + 1*1 + 1*1 + …).
+# Given a number n, find the minimum number of squares that sum to X.
+def min_square_sum(n,dp):
+    # print(n)
+    if n<0:
+        return inf
+    if n<=3:
+        return n
+    if dp[n]!=-1:
+        return dp[n]
+    ans=inf
+    temp=int(n**0.5)
+    # print(n,temp)
+    for i in range(1,temp+1):
+        num=n-(i*i)
+        # print(num)
+        ans=min(ans,min_square_sum(num,dp))
+    ans += 1
+    dp[n]=ans
+    return ans
+# n = 100
+# dp=[-1 for i in range(n+1)]
+# print(min_square_sum(n,dp))
+# print(dp)
+
+
+# Targeted Sum
+# You are given a list of non-negative integers, a1, a2, ..., an, and a target, S. Now you have 2 symbols + and -.
+# For each integer, you should choose one from + and - as its new symbol.
+#
+# Find out how many ways to assign symbols to make sum of integers equal to target S.
+def find_all_combinations(i,s1,s2,num,arr,dp):
+    if  i==len(arr):
+        if s1-s2==num:
+            return 1
+        else:
+            return 0
+    if dp[s1][s2]!=-1:
+        return dp[s1][s2]
+
+    count=find_all_combinations(i+1,s1+arr[i],s2,num,arr,dp)
+    count+=find_all_combinations(i+1,s1,s2+arr[i],num,arr,dp)
+    dp[s1][s2]=count
+    return count
+
+# arr=[3, 2, 2, 2, 4]
+# num=3
+# s=sum(arr)
+# dp=[[-1 for j in range(s+1)]for i in range(s+1)]
+# print(find_all_combinations(0,0,0,num,arr,dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+# Ugly numbers are numbers whose only prime factors are 2, 3 or 5.
+# The sequence 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, … shows the first 11 ugly numbers.
+# By convention, 1 is included.
+# Given a number n, the task is to find n’th Ugly number.
+def getNthUglyNo(n):
+    # code here
+    arr=[0]*n
+    i2=i3=i5=0
+    arr[0]=1
+    next_num_2=2
+    next_num_3=3
+    next_num_5=5
+    for i in range(1,n):
+        next_num=min(next_num_2,next_num_3,next_num_5)
+        if next_num==next_num_2:
+            arr[i]=next_num
+            i2+=1
+            next_num_2=arr[i2]*2
+        if next_num==next_num_3:
+            arr[i]=next_num
+            i3 += 1
+            next_num_3=arr[i3]*3
+        if next_num==next_num_5:
+            arr[i]=next_num
+            i5 += 1
+            next_num_5=arr[i5]*5
+    print(arr)
+    return arr[-1]
+# n=10
+# print(getNthUglyNo(150))
+
+
+def max_square(grid,i,j,dp):
+    if i<0 or j<0:
+        return inf
+    if i==0 or j==0:
+        if grid[i][j]==1:
+            dp[i][j]=1
+            return 1
+    if dp[i][j]!=-1:
+        return dp[i][j]
+    area=min(max_square(grid,i-1,j,dp),max_square(grid,i,j-1,dp),max_square(grid,i-1,j-1,dp))
+    if grid[i][j]==1:
+        area+=1
+    else:
+        area=0
+    dp[i][j]=area
+    # print(i, j,area)
+    return area
+# grid = [[0, 1, 1, 0, 1],
+#         [1, 1, 1, 1, 0],
+#         [1, 1, 1, 1, 0],
+#         [1, 1, 1, 1, 0],
+#         [1, 1, 1, 1, 1],
+#         [0, 0, 0, 0, 0]]
+
+# dp=[[-1 for j in range(len(grid[0]))]for i in range(len(grid))]
+# max_square(grid,len(grid)-1,len(grid[0])-1,dp)
+# # print(max(dp))
+# max_area=0
+# for i in range(len(dp)):
+#     max_area=max(max_area,max(dp[i]))
+# print(max_area)
+
+def partition_the_arr(s1,s2,arr,i,dp):
+    if i==len(arr):
+        if s1==s2:
+            return True
+        else:
+            return False
+    diff=abs(s1-s2)
+    if dp[i][diff]!=-1:
+        return dp[i][diff]
+    dp[i][diff]=partition_the_arr(s1+arr[i],s2,arr,i+1,dp) or partition_the_arr(s1,s2+arr[i],arr,i+1,dp)
+    return dp[i][diff]
+
+# arr=[1, 5, 11, 5]
+# dp=[[-1 for j in range(sum(arr))]for i in range(len(arr))]
+# print(partition_the_arr(0,0,arr,0,dp))
+
+def partition_the_arr_dp(arr):
+    s=sum(arr)
+    if s%2!=0:
+        return False
+
+    dp = [[False for j in range(s//2+1)] for i in range(len(arr))]
+    dp[0][arr[0]]=True
+    temp=arr[0]
+    for i in range(1,len(arr)):
+        temp+=arr[i]
+        for j in range(min(temp+1,s//2+1)):
+            dp[i][j]=dp[i-1][j]
+            if j-arr[i]>=0:
+                dp[i][j]=dp[i][j] or dp[i-1][j-arr[i]]
+    for i in range(len(dp)):
+        print(dp[i])
+    print(dp[len(arr)-1][-1])
+# arr=[1, 5, 11, 5]
+# print(partition_the_arr_dp(arr))
+# print(sum(arr))
+
+
+# Given an array of integers where each element represents the max number of steps that can be made
+# forward from that element. Write a function to return the minimum number of jumps to reach the end of the array
+# (starting from the first element). If an element is 0, they cannot move through that element.
+# If the end isn’t reachable, return -1.
+def find_min_jump(arr,i,dp):
+    if i>=len(arr):
+        return inf
+    if i==len(arr)-1:
+        return 0
+    if dp[i]!=-1:
+        return dp[i]
+    temp=arr[i]
+    min_jump=inf
+    for j in range(i+1,min(len(arr),i+temp+1)):
+        min_jump=min(min_jump,find_min_jump(arr,j,dp))
+    dp[i]=min_jump+1
+    return dp[i]
+
+# arr=[1, 3, 6, 3, 2, 3, 6, 8, 9, 5]
+# dp=[-1 for i in range(len(arr))]
+# print(find_min_jump(arr,0,dp))
+# print(dp)
+
+# Optimization of TC=O(N) and S.C=O(N)
+def minJumps( arr, n):
+    start,end,step=0,0,0
+    while end<n:
+        step+=1
+        max_end=end
+        while start<=end:
+            max_end=max(max_end,start+arr[start])
+            if max_end>=n-1:
+                return step
+            start+=1
+        end=max_end
+    return step
+
+# arr=[1,3,5,8,9,2,6,7,6,8,9,]
+# print(minJumps(arr,len(arr)))
+
+def find_max_bitonic_sum(arr,n):
+    left=[0]*n
+    for i in range(n):
+        temp=0
+        for j in range(0,i):
+            if arr[j]<arr[i]:
+                temp=max(temp,left[j])
+        left[i]=temp+arr[i]
+    right=[0]*n
+    for i in range(n-1,-1,-1):
+        temp=0
+        for j in range(i+1,n):
+            if arr[i]>arr[j]:
+                temp=max(temp,right[j])
+        right[i]=temp+arr[i]
+    max_sum=0
+    for i in range(n):
+        max_sum=max(max_sum,left[i]+right[i]-arr[i])
+    return max_sum
+# arr=[80, 60, 30, 40, 20, 10]
+# print(find_max_bitonic_sum(arr,len(arr)))
+
+#Given 3 strings X, Y and Z, the task is to find the longest common sub-sequence in all three given sequences.
+def find_lcs(s1,s2,s3,i,j,k,dp):
+    if i==len(s1) or j==len(s2) or k==len(s3):
+        return 0
+    if dp[i][j][k]!=-1:
+        return dp[i][j][k]
+    if s1[i]==s2[j]==s3[k]:
+        return 1+find_lcs(s1,s2,s3,i+1,j+1,k+1,dp)
+    result1 = find_lcs(s1, s2, s3, i+1, j, k,dp)
+    result2 = find_lcs(s1, s2, s3, i, j+1, k,dp)
+    result3 = find_lcs(s1, s2, s3, i, j, k+1,dp)
+    dp[i][j][k]=max(result1,result2,result3)
+    return dp[i][j][k]
+# X = 'geeks'
+# Y = 'geeksfor'
+# Z = 'geeksforgeeks'
+#
+# dp=[[[-1 for k in range(len(Z))]for j in range(len(Y))]for i in range(len(X))]
+#
+# print(find_lcs(X,Y,Z,0,0,0,dp))
+
+def find_lcs_dp(s1,s2,s3,a,b,c):
+    dp = [[[-1 for k in range(c+1)] for j in range(b+1)] for i in range(a+1)]
+    for i in range(a):
+        for j in range(b):
+            for k in range(c):
+                if i==0 or j==0 or k==0:
+                    dp[0][j][k]=0
+
+    for i in range(a):
+        for j in range(b):
+            for k in range(c):
+                if s1[i] == s2[j] == s3[k]:
+                    dp[i+1][j+1][k+1]= 1 +dp[i][j][k]
+                else:
+                    dp[i+1][j+1][k+1]=max(dp[i][j+1][k+1],dp[i+1][j][k+1],dp[i+1][j+1][k])
+    return dp[a][b][c]
+
+# X = 'lkbkde'
+# Y = 'cdelkb'
+# Z = 'abcd'
+#
+# print(find_lcs_dp(X,Y,Z,len(X),len(Y),len(Z)))
+
+# Given n friends, each one can remain single or can be paired up with some other friend.
+# Each friend can be paired only once. Find out the total number of ways in which friends can
+# remain single or can be paired up.
+
+def find_friends_pair(n,dp):
+    if n<=2:
+        dp[n]=n
+        return n
+    if dp[n]!=-1:
+        return dp[n]
+    dp[n]=find_friends_pair(n-1,dp) + (n-1)*find_friends_pair(n-2,dp)
+    return dp[n]
+
+# n=3
+# dp=[-1 for i in range(n+1)]
+# print(find_friends_pair(n,dp))
+# print(dp)
+
+def find_friends_pair_dp(n):
+    dp=[0,1,2]
+    for i in range(3,n+1):
+        dp[i%3]=dp[(i-1)%3]+ (i-1)*dp[(i-2)%3]
+    return dp[n%3]
+# n=5
+# print(find_friends_pair_dp(n))
+
+# Building Bridges
+# https://www.geeksforgeeks.org/dynamic-programming-building-bridges/
+def sorted_fun(x,y):
+    if x[0]==y[0]:
+        return x[1]<y[1]
+    return x[0]<y[0]
+def build_max_bridge(bridges,n):
+    dp=[-1 for i in range(n)]
+    bridges=sorted(bridges,key=itemgetter(0,1))
+    dp[0]=1
+    for i in range(1,n):
+        curr_max=0
+        for j in range(0,i):
+            if bridges[i][1]>bridges[j][1]:
+                curr_max=max(curr_max,dp[j])
+        dp[i]=curr_max+1
+    max_bridges=0
+    for i in range(n):
+        max_bridges=max(max_bridges,dp[i])
+    return max_bridges
+
+# bridges=[[6, 2], [4, 3], [2, 6], [1, 5]]
+# print(build_max_bridge(bridges,len(bridges)))
+
+def partition_sum(arr,i,sum,dp):
+    if i<0 or sum <0:
+        return False
+    if sum==0:
+        dp[i][sum]=True
+        return True
+    if dp[i][sum]!=-1:
+        return dp[i][sum]
+    dp[i][sum]=partition_sum(arr,i-1,sum,dp) or partition_sum(arr,i,sum-arr[i],dp)
+    return dp[i][sum]
+
+# arr=[1, 3, 5]
+# s=sum(arr)
+# if s%2!=0:
+#     print(False)
+# else:
+#     dp = [[-1 for j in range((s // 2)+1)] for i in range(len(arr))]
+#     print(partition_sum(arr,len(arr)-1,s//2,dp))
+
+
+# Given two numbers n and k where n represents a number of elements in a set,
+# find a number of ways to partition the set into k subsets.
+def partition_into_k_subset(n,k,dp):
+    if k>n or n<=0:
+        return 0
+    if k==1:
+        return 1
+    if dp[k][n]!=-1:
+        return dp[k][n]
+
+    dp[k][n]=k*partition_into_k_subset(n-1,k,dp)+ partition_into_k_subset(n-1,k-1,dp)
+    return dp[k][n]
+# n=5
+# k=2
+# dp=[[-1 for j in range(n+1)]for i in range(k+1)]
+# print(partition_into_k_subset(n,k,dp))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
