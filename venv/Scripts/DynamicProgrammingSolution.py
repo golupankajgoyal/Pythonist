@@ -2,7 +2,7 @@ import sys
 from sys import maxsize
 from math import inf
 from collections import deque
-from operator import itemgetter
+from operator import itemgetter,attrgetter
 def memFindSumOfSquares(n,arr):
     if n<=1:
         arr[n]=n
@@ -1364,15 +1364,146 @@ def partition_into_k_subset(n,k,dp):
 # dp=[[-1 for j in range(n+1)]for i in range(k+1)]
 # print(partition_into_k_subset(n,k,dp))
 
+# Given a sequence, find the length of the longest palindromic subsequence in it.
+def longest_palindrom_subseq(string,i,j,dp):
+    if j==i:
+        return 1
+    if i-j==1:
+        dp[i][j]=2 if string[i]==string[j] else 1
+        return dp[i][j]
+    if dp[i][j]!=-1:
+        return dp[i][j]
+    result=0
+    if string[i]==string[j]:
+        result=longest_palindrom_subseq(string,i-1,j+1,dp)+2
+    else:
+        ans2 = longest_palindrom_subseq(string, i, j + 1,dp)
+        ans3 = longest_palindrom_subseq(string, i - 1, j,dp)
+        result=max(ans3,ans2)
+    dp[i][j]=result
+    return result
+# string="BBABCBCAB"
+# dp=[[-1 for i in range(len(string))]for j in range(len(string))]
+# i=len(string)-1
+# print(longest_palindrom_subseq(string,i,0,dp))
+# for i in range(len(string)):
+#     print(dp[i])
+
+# Egg Dropping Puzzle
+def find_min_attemps(f,eggs,dp):
+    if eggs==1:
+        return f
+    if f==1 or f==0:
+        return f
+    # print(f, eggs)
+    if dp[eggs][f]!=-1:
+        return dp[eggs][f]
+    attemps=inf
+    for i in range(1,f):
+        temp=max(find_min_attemps(i-1,eggs-1,dp),find_min_attemps(f-i,eggs,dp))+1
+        # print(temp,i,f)
+        attemps=min(attemps,temp)
+    dp[eggs][f]=attemps
+    return dp[eggs][f]
+
+# f=16
+# eggs=8
+# dp=[[-1 for j in range(f+1)]for i in range(eggs+1)]
+# print(find_min_attemps(f,eggs,dp))
 
 
 
+#
+class Pair(object):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
 
+def maxChainLen(arr, n):
+    # Parr:  list of pair
+    # code here
+    arr=sorted(arr,key=attrgetter("a"))
+    for i in range(len(arr)):
+        print(arr[i].a,arr[i].b,end=" ")
+    dp = [0 for k in range(len(Parr))]
+    for i in range(len(dp)):
+        temp=0
+        for  j in range(i):
+            if arr[j].b < arr[i].a:
+                temp = max(temp, dp[j])
+        dp[i]=temp+1
+    ans=0
+    print()
+    # print(dp)
+    for i in range(len(dp)):
+        ans=max(ans,dp[i])
+    return ans
 
+# arr = [5,24,39,60,15,28,27,40,50,90]
+# n=len(arr)//2
+# Parr = []
+# i = 0
+# while n * 2 > i:
+#     Parr.append(Pair(arr[i], arr[i + 1]))
+#     i += 2
+# # print(Parr,len(Parr))
+# print(maxChainLen(Parr, n))
+#Box Stacking Problem
 
+def box_stacking(height,width,length,n):
+    boxes=[]
+    for i in range(n):
+        box1=[height[i],max(width[i],length[i]),min(width[i],length[i])]
+        box2=[width[i],max(height[i],length[i]),min(height[i],length[i])]
+        box3=[length[i],max(height[i],width[i]),min(height[i],width[i])]
+        boxes.append(box1)
+        boxes.append(box2)
+        boxes.append(box3)
+    boxes=sorted(boxes,reverse=True,key=lambda x:(x[1]*x[2]))
+    size=len(boxes)
+    # print(boxes)
+    dp=[-1 for i in range(size)]
+    for i in range(len(boxes)):
+        h=0
+        for j in range(i):
+            if boxes[j][2]>boxes[i][2] and boxes[j][1]>boxes[i][1]:
+                h=max(h,dp[j])
+        dp[i]=h+boxes[i][0]
+    max_height=0
+    # print(dp)
+    for i in range(size):
+        max_height=max(max_height,dp[i])
+    return max_height
 
+# height = [1,4,3]
+# width= [2,5,4]
+# length = [3,6,1]
+# n=len(length)
+# print(box_stacking(height,width,length,n))
 
+# Matrix Chain Multiplication
+def min_operations(arr,j,i,dp):
 
+    if i==j:
+        return 0
+    if i-j==1:
+        dp[i][j]=arr[j]*arr[i+1]*arr[i]
+        return dp[i][j]
+    if dp[i][j]!=-1:
+        return dp[i][j]
+    operations=inf
+    for  k in range(j,i):
+        operations=min(operations,min_operations(arr, j,k, dp) +
+                       min_operations(arr,k+1,i,dp)+ arr[j]*arr[k+1]*arr[i+1])
+    dp[i][j]=operations
+    # print(j, i,operations)
+    return operations
+
+arr=[1, 2, 3, 4, 3]
+dp=[[-1 for i in range(len(arr))]for j in range(len(arr))]
+print(min_operations(arr,0,len(arr)-2,dp))
+for i in range(len(dp)):
+    print(dp[i])
 
 
 
