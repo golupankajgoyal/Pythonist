@@ -58,11 +58,89 @@ def uniqueStrings(mask,pos,strings,n,dp):
     return ans
 
 
-strings = [[1, 1, 1, 0, 1, 0],
-           [1, 0, 0, 1, 0, 0],
-           [1, 1, 0, 1, 0, 0],
-           [1, 1, 1, 1, 0, 0]]
-dp=[[-1 for j in range(1<<len(strings))]for i in range(len(strings[0]))]
-print(uniqueStrings((1<<len(strings))-1,0,strings,len(strings[0]),dp))
-for i in range(len(dp)):
-    print(dp[i])
+# strings = [[1, 1, 1, 0, 1, 0],
+#            [1, 0, 0, 1, 0, 0],
+#            [1, 1, 0, 1, 0, 0],
+#            [1, 1, 1, 1, 0, 0]]
+# dp=[[-1 for j in range(1<<len(strings))]for i in range(len(strings[0]))]
+# print(uniqueStrings((1<<len(strings))-1,0,strings,len(strings[0]),dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+
+# Find the two non-repeating elements in an array of repeating elements/ Unique Numbers 2
+def two_non_repeating(arr):
+    xor_sum=0
+    for  num in arr:
+        xor_sum^=num
+    pos=0
+    while True:
+        if xor_sum&(1<<pos)!=0:
+            break
+        pos+=1
+    temp=0
+    for num  in arr:
+        if num&(1<<pos)!=0:
+            temp^=num
+    num1=temp
+    num2=xor_sum^temp
+    print(num1,num2)
+
+# arr=[2, 4, 7, 9, 2, 4]
+# two_non_repeating(arr)
+
+#Count set bits in an integer
+
+def count_set_bit(num):
+    count=0
+    while num>0:
+        if num&1!=0:
+            count+=1
+        num>>=1
+    return count
+# num=8
+# print(count_set_bit(num))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

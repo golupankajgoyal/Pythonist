@@ -1499,11 +1499,144 @@ def min_operations(arr,j,i,dp):
     # print(j, i,operations)
     return operations
 
-arr=[1, 2, 3, 4, 3]
-dp=[[-1 for i in range(len(arr))]for j in range(len(arr))]
-print(min_operations(arr,0,len(arr)-2,dp))
-for i in range(len(dp)):
-    print(dp[i])
+# arr=[1, 2, 3, 4, 3]
+# dp=[[-1 for i in range(len(arr))]for j in range(len(arr))]
+# print(min_operations(arr,0,len(arr)-2,dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+# Optimal Binary Search Tree
+def min_search_cost(start,end,freq,dp):
+    if 0>start or end>=len(freq) or start>end:
+        return 0
+    if start==end:
+        return freq[start]
+    if dp[start][end]!=-1:
+        return dp[start][end]
+    min_cost=inf
+    curr_sum=sum(freq[start:end+1])
+    for i in range(start,end+1):
+        left=min_search_cost(start,i-1,freq,dp)
+        right=min_search_cost(i+1,end,freq,dp)
+        min_cost=min(min_cost,left+curr_sum+right)
+        dp[start][end]=min_cost
+    return min_cost
+
+# freq=[2,3,4]
+# dp=[[-1 for j in range(len(freq))]for i in range(len(freq))]
+# print(min_search_cost(0,len(freq)-1,freq,dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+
+# Minimum insertions to form a palindrome
+# Given a string str, the task is to find the minimum number of characters to be inserted
+# to convert it to palindrome.
+# Before we go further, let us understand with few examples:
+def min_insertion(string,start,end,dp):
+    if start==end:
+        return 0
+    if end-start==1:
+        return 0 if string[start]==string[end] else 1
+    if dp[start][end]!=-1:
+        return dp[start][end]
+    if string[start]==string[end]:
+        return min_insertion(string,start+1,end-1,dp)
+    call1=min_insertion(string,start+1,end,dp)+1
+    call2=min_insertion(string,start,end-1,dp)+1
+    dp[start][end]=min(call1,call2)
+    # print(start,end,)
+    return dp[start][end]
+
+# string="pankaj"
+# dp=[[-1 for i in range(len(string))]for j in range(len(string))]
+# print(min_insertion(string,0,len(string)-1,dp))
+# for i in range(len(dp)):
+#     print(dp[i])
+
+
+#Maximum Product Cutting
+# Given a rope of length n meters, cut the rope in different parts of integer
+# lengths in a way that maximizes product of lengths of all parts.
+# You must make at least one cut. Assume that the length of rope is more than 2 meters.
+def max_rope_product(n,dp):
+    if n==1:
+        return 1
+    if n<=3:
+        return n-1
+    if dp[n]!=-1:
+        return dp[n]
+    product=0
+    for i in range(1,n//2+1):
+        temp=max(i,max_rope_product(i,dp))*max(n-i,max_rope_product(n-i,dp))
+        product=max(product,temp)
+    dp[n]=product
+    return product
+# n=57
+# dp=[-1 for i in range(n+1)]
+# print(max_rope_product(n,dp))
+# print(dp)
+
+# Cutting a Rod
+# Given a rod of length n inches and an array of prices that contains prices of all pieces of size smaller than n.
+# Determine the maximum value obtainable by cutting up the rod and selling the pieces.
+def max_profit(length,arr,dp):
+    # print(length)
+    if dp[length]!=-1:
+        return dp[length]
+    curr_profit=0
+    for i in range(1,length//2+1):
+        curr_profit=max(curr_profit,max_profit(i,arr,dp)+max_profit(length-i,arr,dp))
+    dp[length]=max(arr[length-1],curr_profit)
+    return curr_profit
+
+# Driver code
+# arr = [3, 5, 8, 9, 10, 17, 17, 20]
+# size = len(arr)
+# dp=[-1 for i in range(size+1)]
+# print(max_profit(size,arr,dp))
+# print(dp)
+
+#Given an integer N denoting the Length of a line segment. You need to cut the line segment
+# in such a way that the cut length of a line segment each time is either x , y or z.
+# Here x, y, and z are integers.
+# After performing all the cut operations, your total number of cut segments must be maximum.
+def max_segment(n,x,y,z,dp):
+    if n<x:
+        return 0
+    if n%x==0:
+        dp[n]=n//x
+        return dp[n]
+    if dp[n]!=-1:
+        return dp[n]
+    result1=max_segment(n-z,x,y,z,dp)
+    if result1!=0:
+        result1+=1
+    result2=max_segment(n-y,x,y,z,dp)
+    if result2!=0:
+        result2+=1
+    dp[n]=max(result1,result2)
+    return dp[n]
+
+# N = 17
+# x = 5
+# y = 3
+# z = 2
+# x,y,z=sorted((x,y,z))
+# dp=[-1 for i in range(N+1)]
+# print(max_segment(N,x,y,z,dp))
+# print(dp)
+
+
+
+
+
+
+
+
+
+
+
 
 
 

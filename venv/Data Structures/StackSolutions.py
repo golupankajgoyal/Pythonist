@@ -1,4 +1,5 @@
 from collections import deque
+from math import inf
 def findDoubleInExpression(string):
     stack=deque()
     for char in string:
@@ -104,3 +105,43 @@ def nextLargerElement(arr,n):
             stack.append(top)
         stack.append(arr[i])
     return ans
+# n=4
+# arr=[3,1,4,2]
+# print(nextLargerElement(arr,n))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def find_height(arr,n):
+#     ans=0
+#     pos=[0,0]
+#     for i in range(n):
+#         for j in range(i+1,n):
+#             if arr[j]>=arr[i] and j-i>ans:
+#                 ans=j-i
+#                 pos=[i,j]
+#     print(ans)
+#     print(pos[0],pos[1])
+# n=int(input())
+# arr=list(map(int,input().split()))
+# find_height(arr,n)
+
+
+
