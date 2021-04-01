@@ -1,12 +1,14 @@
 import os
 import sys
-
+# For flush output
+# sys.stdout.flush()
+from collections import deque, defaultdict, Counter, OrderedDict
+from math import ceil, sqrt, hypot, factorial, pi, sin, cos, radians,inf
+from heapq import heappush, heappop, heapify, nlargest, nsmallest
+from itertools import permutations
 sys.setrecursionlimit(1 << 30)
 from io import BytesIO, IOBase
-from collections import defaultdict,deque
-import math
 import bisect
-from math import inf
 import random
 
 ins = lambda: [int(x) for x in input()]
@@ -19,53 +21,22 @@ md = pow(10, 9) + 7
 N = 2 * (10 ** 5) + 7
 
 dp = [[-1] * N for _ in range(int(math.log2(N)) + 1)]
-def binary_lift(node,parent,tree,dp):
-    dp[node]=[-1]*20
-    dp[node][0]=parent
-    for i in range(1,20):
-        if dp[dp[node][i-1]]!=[]:
-            dp[node][i]=dp[dp[node][i-1]][i-1]
-        else:
-            break
-    for child in tree[node]:
-        if child !=parent:
-            binary_lift(child,node,tree,dp)
 
-def bit_set_stack(pos,num,stack):
-    if num==0:
-        return
-    pos=0
-    while num>0:
-        if (num&1)!=0:
-            stack.append(pos)
-        pos+=1
-        num>>=1
-    return stack
-
-def find_kth_parent(node,dp,stack):
-    temp=node
-    while stack:
-        power=stack.pop()
-        temp=dp[temp][power]
-    return temp
-
-
+def dice_combination_dp(num):
+    dp=[-1 for i in range(num+1)]
+    dp[0]=1
+    for  i in range(1,num+1):
+        temp=0
+        for j in range(1,7):
+            if i-j>=0:
+                temp+=dp[i-j]
+        dp[i]=temp
+    return dp[num]
 
 # dp2=[1]*(1000001)
 def main():
-    dp = [[-1] * N for _ in range(int(math.log2(N)) + 1)]
-    tree = defaultdict(list)
-    n, q = inps()
-    parents = inps()
-    for i in range(len(parents)):
-        tree[parents[i]].append(i + 2)
-        tree[i + 2].append(parents[i])
-    binary_lift(1, -1, tree, dp)
-    for i in range(q):
-        node, k = inps()
-        stack = deque()
-        bit_set_stack(0, k, stack)
-        print(find_kth_parent(node, dp, stack))
+    num = inp()
+    print(dice_combination_dp(num) % md)
 
 
     # n, q = inps()
