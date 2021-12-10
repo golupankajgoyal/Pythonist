@@ -1,0 +1,14 @@
+{
+  "widget_type": "widget_sg_individual_chat",
+  "widget_data": {
+    "user_id": "214241",
+    "user_name": "Shalu",
+    "user_image": "https://image.jpge",
+    "unread_count": 3,
+    "time": "yesterday",
+    "toast_message": "message",
+    "is_active": true,
+    "subtitle": "Hello Rukmum? How are you ...",
+    "deeplink": "doubtnut://study-group"
+  }
+}

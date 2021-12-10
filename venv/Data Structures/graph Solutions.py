@@ -421,18 +421,18 @@ def find_sorted_path(edges,src):
     for dist in sorted(distance.values()):
         print(dist,end=" ")
 
-# l = [("A", "B", 7),
-#      ("A", "D", 5),
-#      ("B", "C", 8),
-#      ("B", "D", 9),
-#      ("B", "E", 50),
-#      ("C", "E", 5),
-#      ("D", "E", 15),
-#      ("D", "F", 100),
-#      ("E", "F", 8),
-#      ("E", "G", 9),
-#      ("F", "G", 11)]
-# find_sorted_path(l,"A")
+l = [("A", "B", 7),
+     ("A", "D", 5),
+     ("B", "C", 8),
+     ("B", "D", 9),
+     ("B", "E", 50),
+     ("C", "E", 5),
+     ("D", "E", 15),
+     ("D", "F", 100),
+     ("E", "F", 8),
+     ("E", "G", 9),
+     ("F", "G", 11)]
+find_sorted_path(l,"A")
 
 # CB-Religious People
 # All the people living in our imaginary world Bitworld are very religious.
@@ -698,10 +698,24 @@ def eventualSafeNodes(graph):
     return sorted(ans)
 
 # Input:
-graph = [[1,2],[2,3],[5],[0],[5],[],[]]
-print(eventualSafeNodes(graph))
+# graph = [[1,2],[2,3],[5],[0],[5],[],[]]
+# print(eventualSafeNodes(graph))
 
-
+# Detect cycle in an undirected graph
+def isCyclic(V, adj):
+    parent = defaultdict(int)
+    visited = defaultdict(bool)
+    queue = deque()
+    queue.append(0)
+    while queue:
+        node = queue.popleft()
+        for child in adj[node]:
+            if visited[child] == True and parent[node] != child :
+                return True
+            queue.append(child)
+            parent[child] = node
+        visited[node] = True
+    return False
 
 
 

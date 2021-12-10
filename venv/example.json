@@ -1,0 +1,135 @@
+{
+  "data": {
+    "widget_type": "widget_parent",
+    "widget_data": {
+      "title": "Recommended Free Classes For You",
+      "is_title_bold": true,
+      "items": [
+        {
+          "type": "live_class_carousel_card_2",
+          "data": {
+            "id": "220527483",
+            "assortment_id": 16095,
+            "page": "HOME_FEED_LIVE",
+            "title1": "CBSE I Understanding it’s rule I Practice Question",
+            "image_url": "",
+            "is_live": true,
+            "player_type": "liveclass",
+            "live_at": 1636537093000,
+            "image_bg_card": "https://doubtnut-static.s.llnwi.net/static-imagekit/engagement_framework/9B437CC2-2FC2-67DC-33FA-C36484B24E5F.webp",
+            "bottom_title": "",
+            "topic": "",
+            "students": 13822,
+            "interested": 13822,
+            "is_premium": false,
+            "is_vip": false,
+            "state": 2,
+            "payment_deeplink": "doubtnutapp://vip?assortment_id=16095",
+            "card_width": "2.1",
+            "card_ratio": "7:5",
+            "text_color_title": "#17181f",
+            "set_width": true,
+            "button_state": "join_now",
+            "image_vertical_bias": 1,
+            "target_exam": "",
+            "button": null,
+            "deeplink": "doubtnutapp://course_details?id=16095",
+            "tag_two_text": "By Manisha Chauhan",
+            "tag_two_bg_color": "#ffc5b2",
+            "tag_two_text_color": "#17181f",
+            "class_topic": "Deep Water I William recountin…",
+            "video_duration_text": "13000 watching | 60 Min",
+            "class_topic_size": "10",
+            "video_duration_text_size": "9",
+          }
+        },
+        {
+          "type": "live_class_carousel_card_2",
+          "data": {
+            "id": "220527483",
+            "assortment_id": 16095,
+            "page": "HOME_FEED_LIVE",
+            "title1": "CBSE I Understanding it’s rule I Practice Question",
+            "image_url": "",
+            "is_live": true,
+            "player_type": "liveclass",
+            "live_at": 1636537093000,
+            "image_bg_card": "https://doubtnut-static.s.llnwi.net/static-imagekit/engagement_framework/9B437CC2-2FC2-67DC-33FA-C36484B24E5F.webp",
+            "bottom_title": "",
+            "topic": "",
+            "students": 13822,
+            "interested": 13822,
+            "is_premium": false,
+            "is_vip": false,
+            "state": 2,
+            "payment_deeplink": "doubtnutapp://vip?assortment_id=16095",
+            "card_width": "2.1",
+            "card_ratio": "7:5",
+            "text_color_title": "#17181f",
+            "set_width": true,
+            "button_state": "join_now",
+            "image_vertical_bias": 1,
+            "target_exam": "",
+            "button": null,
+            "tag_two_text": "By Manisha Chauhan",
+            "tag_two_bg_color": "#ffc5b2",
+            "tag_two_text_color": "#17181f",
+            "deeplink": "doubtnutapp://course_details?id=16095",
+            "class_topic": "Deep Water I William recountin…",
+            "video_duration_text": "13000 watching | 60 Min",
+            "class_topic_size": "10",
+            "video_duration_text_size": "9",
+            "top_heading_text": "English Grammar Class 12",
+            "top_heading_text_color": "#fda589",
+            "join_now_cta": "Join Now",
+            "join_now_deeplink": "doubtnutapp://course_details?id=16095"
+          }
+        }
+      ],
+      "link_text": "view all"
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

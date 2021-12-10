@@ -1,5 +1,5 @@
 import heapq
-
+from math import inf
 def findKlargeElements(arr, k):
     size=len(arr)
     for i in range(size):
@@ -67,3 +67,37 @@ class MeadianOfAStream:
         if len(self.min_heap)==len(self.max_heap):
             return -self.max_heap[0]/2 + self.min_heap[0]/2
         return -self.max_heap[0]/1
+
+
+# Smallest range in K lists
+def smallestRange(numbers):
+    min_heap, start, end = [], 0, 0
+    range = inf
+    max_num = 0
+    min_num = inf
+    for i,arr in enumerate(numbers):
+        max_num = max(max_num, arr[0])
+        heapq.heappush(min_heap, (arr[0],i,0))
+    while True:
+        min_num, i, j = heapq.heappop(min_heap)
+        arr = numbers[i]
+        if range > max_num - min_num + 1:
+            range = max_num - min_num + 1
+            start = min_num
+            end = max_num
+        if j+1<len(arr):
+            heapq.heappush(min_heap, (arr[j+1], i, j+1))
+            max_num = max(max_num, arr[j+1])
+        else:
+            break
+    return [start, end]
+
+
+numbers = [[1,3,5],
+[7,8,9],
+[2,4,6],
+[2,3,8],
+[5,7,11],]
+print(smallestRange(numbers))
+
+
